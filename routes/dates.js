@@ -4,7 +4,7 @@ const router = express.Router()
 
 Dates = []
 
-for(let i = moment().add(15, 'm').hour() > 19 ? 1 : 0; i <= 7; i++) {
+for(let i = moment().add(15, 'm').hour() > 20 ? 1 : 0; i <= 7; i++) {
     if(moment().add(i, 'd').format('ddd') !== "Sun") {
         Dates.push(moment().add(i, 'd'))
     }

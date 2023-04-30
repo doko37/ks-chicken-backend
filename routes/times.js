@@ -18,9 +18,7 @@ function createArray() {
                     time.push(moment().hour(11).minute(0).add(increment * i, 'm').format())
                 }
             } else if (moment().hour() + 1 === moment().hour(11).minute(0).add(increment * i, 'm').hour()) {
-                if (!(moment().add(15, 'm').minute() >= moment().hour(11).minute(0).add(increment * i, 'm').minute())) {
-                    time.push(moment().hour(11).minute(0).add(increment * i, 'm').format())
-                }
+                time.push(moment().hour(11).minute(0).add(increment * i, 'm').format())
             } else if (!(moment().hour() > moment().hour(11).minute(0).add(increment * i, 'm').hour())) {
                 time.push(moment().hour(11).minute(0).add(increment * i, 'm').format())
             } else if (moment().hour() > 19) {

@@ -2,25 +2,9 @@ const mongoose = require('mongoose')
 const UserModel = require('./User')
 
 const OrderSchema = new mongoose.Schema({
-    fName: {
-        type: String,
-        required: true
-    },
-    lName: {
-        type: String,
-        required: true
-    },
-    phoneNo: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
     user: {
         type: Object,
-        required: true,
+        required: true
     },
     date: {
         type: String,
