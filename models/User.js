@@ -1,22 +1,18 @@
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
-    // fname: {
-    //     type: String,
-    //     required: true
-    // },
-    // lname: {
-    //     type: String,
-    //     required: true
-    // },
-    // phNo: {
-    //     type: String,
-    //     required: true
-    // },
-    // email: {
-    //     type: String,
-    //     required: true
-    // },
+    fname: {
+        type: String,
+        required: false
+    },
+    lname: {
+        type: String,
+        required: false
+    },
+    email: {
+        type: String,
+        required: false
+    },
     password: {
         type: String,
         required: false
@@ -33,6 +29,10 @@ const UserSchema = new mongoose.Schema({
     cart: {
         items: [],
         numItems: {
+            type: Number,
+            default: 0
+        },
+        numHalfs: {
             type: Number,
             default: 0
         },

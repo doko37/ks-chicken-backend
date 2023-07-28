@@ -6,11 +6,11 @@ const OrderSchema = new mongoose.Schema({
         type: Object,
         required: true
     },
-    date: {
+    pickupTime: {
         type: String,
         required: true
     },
-    time: {
+    orderNo: {
         type: String,
         required: true
     }
