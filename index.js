@@ -14,6 +14,7 @@ const stripeRoute = require('./routes/stripe')
 const stripeWebhookRoute = require('./routes/stripeWebhook')
 const orderRoute = require('./routes/order')
 const cors = require('cors')
+const fs = require('fs')
 
 app.use(cors())
 app.use(express.static("public"))
@@ -31,6 +32,10 @@ app.use("/api/cart", cartRoute)
 app.use("/api/user", userRoute)
 app.use("/api/order", orderRoute)
 
-app.listen(403, () => {
-    console.log("listening on port 403")
+app.get('/.well-known/pki-validation/AEF171AF202DFE2DB2A503F09E80CC02.txt', (req, res) => {
+    res.sendFile('C:/Users/hunub/OneDrive/Documents/ks-chicken/server/AEF171AF202DFE2DB2A503F09E80CC02.txt')
+})
+
+app.listen(3001, () => {
+    console.log("listening on port 3001")
 })
