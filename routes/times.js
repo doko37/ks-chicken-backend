@@ -1,11 +1,11 @@
 const express = require('express')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const router = express.Router()
 const Order = require('../models/Order')
 
 async function countOrders(time) {
-    let pickupTime = moment().startOf('day').add(time)
-    const now = moment()
+    let pickupTime = moment.tz('Pacific/Auckland').startOf('day').add(time)
+    const now = moment.tz('Pacific/Auckland')
 
     if(now.hour() > 20 || (now.hour() === 20 && now.minute() > 15)) {
         pickupTime.add(1, 'd')
@@ -29,7 +29,7 @@ async function createArray() {
     const increment = 5
     const closeHour = 20
     
-    const currentTime = moment();
+    const currentTime = moment.tz('Pacific/Auckland')
 
     // TODO: check for different dates
     if(currentTime.hour() > closeHour) {

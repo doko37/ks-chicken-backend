@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.0",
     "mailgen": "^2.0.27",
     "moment": "^2.29.3",
+    "moment-timezone": "^0.5.43",
     "mongoose": "^6.2.8",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.15",
