@@ -17,13 +17,14 @@ function keyWithoutNum(key) {
 
 const calculateItemPrice = async (item) => {
     let originItem
+    let itemQuantity = item.quantity <= 0 ? 1 : item.quantity
 
     if(item.type === "chicken") {
         originItem = await ChickenItem.findOne({key: keyWithoutNum(item.key)})
     } else if(item.key.includes("chips")) {
         originItem = await SidesItem.findOne({key: "chips"})
     } else {
-        return item.price
+        return 3 * itemQuantity
     }
 
     let price = 0
@@ -42,7 +43,7 @@ const calculateItemPrice = async (item) => {
         if (item.toppings.onion) price += (2 * (item.type === 'chicken' ? (item.size === 'half' ? 1 : 2) : 1))
     }
 
-    return price * item.quantity
+    return price * itemQuantity
 }
 
 const calculateTotal = async (items) => {
@@ -53,8 +54,10 @@ const calculateTotal = async (items) => {
 
     for (let i in items) {
         total += await calculateItemPrice(items[i])*100
-        if (items[i].chickenType === "marinated") marinated += 1
-        else if (items[i].chickenType === "non_marinated") nonMarinated += 1
+        if(items[i].type === "chicken" && items[i].size === "half") {
+            if (items[i].chickenType === "marinated") marinated += 1
+            else if (items[i].chickenType === "non_marinated") nonMarinated += 1
+        }
     }
 
     let mariLeftOver = marinated % 2;
@@ -77,7 +80,10 @@ const calculateTotal = async (items) => {
 
 router.post("/create-payment-intent/:id", verifyTokenAndAuthorization, async (req, res) => {
     const items = req.body.cart
-    const amount = await calculateTotal(items)
+    let amount
+    try {
+        amount = await calculateTotal(items)
+    } catch(err) { res.status(500).json(err) }
 
     const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
@@ -91,7 +97,8 @@ router.post("/create-payment-intent/:id", verifyTokenAndAuthorization, async (re
             email: req.body.email,
             phoneNo: req.body.phno,
             userId: req.body.userId, 
-            pickupTime: req.body.pickupTime
+            pickupTime: req.body.pickupTime,
+            total: amount
         }
     })
 

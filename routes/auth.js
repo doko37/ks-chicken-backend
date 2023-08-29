@@ -17,7 +17,7 @@ router.post("/createGuest", async (req, res) => {
                 isAdmin: savedUser.isAdmin
             },
             process.env.JWT_SEC,
-            { expiresIn: "1h" }
+            { expiresIn: "30m" }
         )
 
         const { id, ...others } = savedUser._doc
@@ -35,7 +35,7 @@ router.post("/createUser", async (req, res) => {
             process.env.PASS_SEC
         ),
         isGuest: false,
-        isAdmin: req.body.isAdmin
+        isAdmin: false
     })
 
     try {

@@ -62,10 +62,12 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
         const mail = `
         <main>
             <img src="https://i.ibb.co/0tsCTMh/logo.png" alt="logo" border="0" style="height: 80px; margin-bottom: 1rem; background-color: #252425; padding: 1rem; border-radius: 0.5rem">
-            <h2>Hi ${data.fname}, Thank you for your order!</h2>
-            <h2>Your order will be ready for pick up at:</h2>
-            <h3>Date: ${moment(data.date).format("YYYY/MM/DD")}</h3>
-            <h3>Time: ${moment(data.time).format("HH:mm")}</h3>
+            <h3>Hi ${data.fname}, Thank you for your order!</h3>
+            <h4>Your order:</h4>
+            ${user.cart.items.map(item => `${item.name} x${item.quantity} <br />`)}
+            <h4>It will be ready for pick up at:</h4>
+            <p>${moment(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
+            <p>Order total: $${(data.total / 100).toFixed(2)}</p>
         </main>
         `
 

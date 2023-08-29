@@ -31,10 +31,11 @@ async function createArray() {
     
     const currentTime = moment();
 
+    // TODO: check for different dates
     if(currentTime.hour() > closeHour) {
         currentTime.hour(10).minute(55)
     } else {
-        if(currentTime.hour() === closeHour && currentTime.minute() > 15) {
+        if((currentTime.hour() === 10 && currentTime.minute() < 50) || currentTime.hour() < 11) {
             currentTime.hour(10).minute(55)
         } else {
             const remainder = currentTime.minute() % 5;
@@ -42,19 +43,20 @@ async function createArray() {
         }
     }
 
-    while(currentTime.add(increment, 'm').hour() <= closeHour) {
+    while(currentTime.add(increment, 'm').hour() < closeHour) {
         let count = await countOrders(currentTime.format('HH:mm'))
-        if(count < 4) {
-            if(currentTime.hour() === closeHour) {
-                if(currentTime.minute() <= 30) {
-                    time.push({time: currentTime.format('HH:mm'), available: true})
-                }
-            } else {
-                time.push({time: currentTime.format('HH:mm'), available: true})
-            }
-        } else {
-            time.push({time: currentTime.format('HH:mm'), available: false})
-        }
+        time.push({time: currentTime.format('HH:mm'), available: (count < 4)})
+        // if(count < 4) {
+        //     if(currentTime.hour() === closeHour) {
+        //         if(currentTime.minute() <= 30) {
+        //             time.push({time: currentTime.format('HH:mm'), available: true})
+        //         }
+        //     } else {
+        //         time.push({time: currentTime.format('HH:mm'), available: true})
+        //     }
+        // } else {
+        //     time.push({time: currentTime.format('HH:mm'), available: false})
+        // }
     }
 
     return time
