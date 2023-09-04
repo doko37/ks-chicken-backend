@@ -10,6 +10,14 @@ const DrinksItemSchema = new mongoose.Schema({
         required: true
 
     },
+    size: {
+        type: Array,
+        required: false
+    },
+    drinks: {
+        type: Array,
+        required: false
+    },
     key: {
         type: String,
         required: true
@@ -18,4 +26,4 @@ const DrinksItemSchema = new mongoose.Schema({
 
 
 const DrinksItemModel = mongoose.model("DrinksItem", DrinksItemSchema)
-module.exports = SidesItemModel
+module.exports = DrinksItemModel

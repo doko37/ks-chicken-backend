@@ -65,9 +65,9 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             <h3>Hi ${data.fname}, Thank you for your order!</h3>
             <h4>Your order:</h4>
             ${user.cart.items.map(item => `${item.name} x${item.quantity} <br />`)}
+            <h4>Order total: $${(data.total / 100).toFixed(2)}</h4>
             <h4>It will be ready for pick up at:</h4>
             <p>${moment(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
-            <p>Order total: $${(data.total / 100).toFixed(2)}</p>
         </main>
         `
 

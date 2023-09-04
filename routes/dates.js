@@ -8,7 +8,7 @@ function getDates() {
     const now = moment()
     let i = 0
     
-    if(now.hour() > 20 || (now.hour() === 20 && now.minute() > 15)) {
+    if(now.hour() >= 20 || (now.hour() === 19 && now.minute() >= 50)) {
         i = 1
     }
     

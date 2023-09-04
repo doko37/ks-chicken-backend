@@ -1,6 +1,7 @@
 const { verifyTokenAndAuthorization, verifyTokenAndAdmin } = require('./verifyToken')
 const ChickenItem = require('../models/ChickenItem')
 const SidesItem = require('../models/SidesItem')
+const DrinksItem = require('../models/DrinksItem')
 
 const router = require("express").Router()
 const stripe = require('stripe')(process.env.STRIPE_SEC_KEY)
@@ -16,16 +17,22 @@ function keyWithoutNum(key) {
 }
 
 const calculateItemPrice = async (item) => {
-    let originItem
+    let originItem = null
     let itemQuantity = item.quantity <= 0 ? 1 : item.quantity
 
     if(item.type === "chicken") {
         originItem = await ChickenItem.findOne({key: keyWithoutNum(item.key)})
     } else if(item.key.includes("chips")) {
         originItem = await SidesItem.findOne({key: "chips"})
-    } else {
+    } else if(item.type === "drinks") {
+        originItem = await DrinksItem.findOne({key: keyWithoutNum(item.key)})
+        let size = originItem.size.find(i => i.size === item.size)
+        return (originItem.price + size.price) * itemQuantity
+    } else if(item.type === "sides") {
         return 3 * itemQuantity
     }
+
+    if(originItem === null) return null
 
     let price = 0
     if (item.type === "chicken") {
@@ -53,7 +60,9 @@ const calculateTotal = async (items) => {
     let discount = 0
 
     for (let i in items) {
-        total += await calculateItemPrice(items[i])*100
+        let price = await calculateItemPrice(items[i])
+        if(price === null) return null
+        total += price*100
         if(items[i].type === "chicken" && items[i].size === "half") {
             if (items[i].chickenType === "marinated") marinated += 1
             else if (items[i].chickenType === "non_marinated") nonMarinated += 1
@@ -83,6 +92,10 @@ router.post("/create-payment-intent/:id", verifyTokenAndAuthorization, async (re
     let amount
     try {
         amount = await calculateTotal(items)
+        if(amount === null) {
+            res.status(500).json("Invalid Items")
+            return
+        }
     } catch(err) { res.status(500).json(err) }
 
     const paymentIntent = await stripe.paymentIntents.create({
