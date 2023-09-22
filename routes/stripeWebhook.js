@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer')
 const mailgen = require('mailgen')
 const moment = require('moment')
 
-const endpointSecret = "whsec_8d64f1f6dae0e7239325380e5f739e2a89fdeb779182e4b1ada1d451c249a866";
+const endpointSecret = "whsec_7TtQZVIPNCVGogCuuuSZEwph9zzdlBqq";
 
 router.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
     const sig = request.headers['stripe-signature'];
