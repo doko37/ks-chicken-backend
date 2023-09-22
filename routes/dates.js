@@ -1,11 +1,11 @@
 const express = require('express')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const router = express.Router()
 
 function getDates() {
     let Dates = []
     
-    const now = moment()
+    const now = moment.tz('Pacific/Auckland')
     let i = 0
     
     if(now.hour() >= 20 || (now.hour() === 19 && now.minute() >= 50)) {
