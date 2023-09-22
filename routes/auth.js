@@ -14,10 +14,10 @@ router.post("/createGuest", async (req, res) => {
         const accessToken = jwt.sign(
             {
                 id: savedUser._id,
-                isAdmin: savedUser.isAdmin
+                isAdmin: false
             },
             process.env.JWT_SEC,
-            { expiresIn: "30m" }
+            { expiresIn: "1h" }
         )
 
         const { id, ...others } = savedUser._doc

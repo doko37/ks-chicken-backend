@@ -3,16 +3,15 @@ const Order = require('../models/Order')
 const router = require("express").Router()
 const { verifyTokenAndAdmin, verifyTokenAndAuthorization } = require('./verifyToken')
 
-router.post("/timeAvailable", async (req, res) => {
-    // TODO: return the number of order times that needs to be offset for the numHalfs the customer is ordering.
-
-    let { numHalfs, pickupTime } = req.body;
+router.post("/numHalfs", async (req, res) => {
+    let { pickupTime } = req.body;
     const orders = await Order.find({pickupTime: pickupTime})
+    let numHalfs = 0
     for(i in orders) {
         numHalfs += orders[i].user.cart.numHalfs
     }
 
-    res.status(200).json({ leftover: numHalfs - 4 })
+    res.status(200).json({ numHalfs: numHalfs })
 })
 
 router.get("/orderExists/:orderNo", async (req, res) => {
