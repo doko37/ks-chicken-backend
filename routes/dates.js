@@ -8,12 +8,12 @@ function getDates() {
     const now = moment.tz('Pacific/Auckland')
     let i = 0
     
-    if(now.hour() >= 20 || (now.hour() === 19 && now.minute() >= 50)) {
+    if(now.hour() >= 20 || (now.hour() === 19 && now.minute() > 50)) {
         i = 1
     }
     
     for(i; i <= 7; i++) {
-        if(moment().add(i, 'd').format('ddd') !== "Sun") {
+        if(now.add(i, 'd').format('ddd') !== "Sun") {
             Dates.push(moment().startOf('day').add(i, 'd').format('YYYY-MM-DD HH:mm'))
         }
     }
