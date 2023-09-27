@@ -67,7 +67,7 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             <img src="https://i.ibb.co/0tsCTMh/logo.png" alt="logo" border="0" style="height: 80px; margin-bottom: 1rem; background-color: #252425; padding: 1rem; border-radius: 0.5rem">
             <h3>Hi ${data.fname}, Thank you for your order!</h3>
             <h4>Your order:</h4>
-            ${user.cart.items.map(item => `${item.name} x${item.quantity} <br />`)}
+            ${user.cart.items.map(item => `<p>${item.name} x${item.quantity}</p>`)}
             <h4>Order total: $${(data.total / 100).toFixed(2)}</h4>
             <h4>It will be ready for pick up at:</h4>
             <p>${moment(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
