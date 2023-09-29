@@ -13,9 +13,11 @@ function getDates() {
     }
     
     for(i; i <= 7; i++) {
-        if(now.add(i, 'd').format('ddd') !== "Sun") {
-            Dates.push(moment().startOf('day').add(i, 'd').format('YYYY-MM-DD HH:mm'))
+        if(now.format('ddd') !== "Sun") {
+            Dates.push(now.startOf('day').format('YYYY-MM-DD HH:mm'))
         }
+
+        now.add(1, 'd')
     }
 
     return Dates
