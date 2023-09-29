@@ -25,7 +25,7 @@ async function createArray(date) {
     const currentTime = moment.tz('Pacific/Auckland').format('HH:mm')
     const orderTime = moment(date).startOf('d').add(currentTime)
     const splitTime = currentTime.split(':')
-    if(date === undefined && (Number(splitTime[0]) >= 20 || Number(splitTime[0]) === 19 && Number(splitTime[1]) >= 50 )) orderTime.add(1, 'd')
+    if(date === undefined && (Number(splitTime[0]) >= 20 || Number(splitTime[0]) === 19 && Number(splitTime[1]) > 50 )) orderTime.add(1, 'd')
 
     if(orderTime.hour() >= closeHour) {
         orderTime.hour(11).minute(0)
