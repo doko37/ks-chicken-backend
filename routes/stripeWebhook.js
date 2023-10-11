@@ -34,9 +34,7 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
         break;
       case 'charge.succeeded':
         const data = JSON.parse(request.body).data.object.metadata
-        console.log(data.userId)
         const user = await User.findById(data.userId)
-        console.log(user)
         const custInfo = {
             fname: data.fname,
             lname: data.lname,
@@ -53,7 +51,6 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             orderNo: orderNumber
         }
 
-        console.log(order)
         const newOrder = new OrderModel(order)
         await newOrder.save()
 
