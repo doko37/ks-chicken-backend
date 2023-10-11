@@ -110,6 +110,7 @@ router.post("/create-payment-intent/:id", verifyTokenAndAuthorization, async (re
             email: req.body.email,
             phoneNo: req.body.phno,
             userId: req.body.userId, 
+            pickupDate: req.body.pickupDate,
             pickupTime: req.body.pickupTime,
             total: amount
         }
@@ -119,9 +120,10 @@ router.post("/create-payment-intent/:id", verifyTokenAndAuthorization, async (re
         clientSecret: paymentIntent.client_secret,
         amount: amount,
         userId: req.body.userId,
+        pickupDate: req.body.pickupDate,
         pickupTime: req.body.pickupTime,
         email: req.body.email,
-        orderNo: moment(req.body.pickupTime).format('MMDD') + req.body.userId.substring(req.body.userId.length - 4)
+        orderNo: moment(req.body.pickupDate).format('MMDD') + req.body.userId.substring(req.body.userId.length - 4)
     })
 })
 

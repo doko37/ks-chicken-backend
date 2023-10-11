@@ -6,13 +6,12 @@ function getDates() {
     let Dates = []
     
     const now = moment.tz('Pacific/Auckland')
-    let i = 0
     
     if(now.hour() >= 20 || (now.hour() === 19 && now.minute() > 50)) {
-        i = 1
+        now.add(1, 'd')
     }
     
-    for(i; i <= 7; i++) {
+    for(let i = 0; i <= 7; i++) {
         if(now.format('ddd') !== "Sun") {
             Dates.push(now.startOf('day').format('YYYY-MM-DD HH:mm'))
         }
