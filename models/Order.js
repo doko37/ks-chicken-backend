@@ -6,6 +6,10 @@ const OrderSchema = new mongoose.Schema({
         type: Object,
         required: true
     },
+    pickupDate: {
+        type: String,
+        required: true
+    },
     pickupTime: {
         type: String,
         required: true

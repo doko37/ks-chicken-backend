@@ -43,12 +43,14 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             cart: user.cart
         }
 
-        const orderNumber = moment(data.pickupTime).format('MMDD') + data.userId.substring(data.userId.length - 4)
+        const orderNumber = moment(data.pickupDate).format('MMDD') + data.userId.substring(data.userId.length - 4)
         const order = {
             user: custInfo,
+            pickupDate: data.pickupDate,
             pickupTime: data.pickupTime,
             orderNo: orderNumber
         }
+
         const newOrder = new OrderModel(order)
         await newOrder.save()
 
@@ -70,7 +72,7 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             ${user.cart.items.map(item => `<p>${item.name} x${item.quantity}</p>`)}
             <h4>Order total: $${(data.total / 100).toFixed(2)}</h4>
             <h4>It will be ready for pick up at:</h4>
-            <p>${moment(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
+            <p>${moment(data.pickupDate).startOf('d').add(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
         </main>
         `
 
