@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Order = require('../models/Order')
 const router = require("express").Router()
 const { verifyTokenAndAdmin, verifyTokenAndAuthorization } = require('./verifyToken')
+const moment = require('moment-timezone')
 
 router.post("/numHalfs", async (req, res) => {
     let { pickupTime } = req.body;
@@ -26,12 +27,25 @@ router.get("/:orderNo", verifyTokenAndAdmin, async (req, res) => {
     } catch(err) { res.status(500).json(err) }
 })
 
+// TODO: return all orders with the current date
+router.get("/today", verifyTokenAndAdmin, async (req, res) => {
+    try {
+        const now = moment.tz('Pacific/Auckland')
+        const today = now.add(now.hour() >= 20 ? 1 : 0, 'd').format('YYYY-MM-DD')
+        console.log(today)
+        const orders = await Order.find({"pickupDate" : today})
+        res.status(200).json(orders)
+    } catch(err) { res.status(500).json(err) }
+})
+
+
 router.get("/", verifyTokenAndAdmin, async (req, res) => {
     try {
         const orders = await Order.find().sort({"pickupTime" : 1})
         res.status(200).json(orders)
     } catch(err) { res.status(500).json(err) }
 })
+
 
 router.delete("/", verifyTokenAndAdmin, async (req, res) => {
     try {
