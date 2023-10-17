@@ -15,19 +15,12 @@ router.post("/numHalfs", async (req, res) => {
     res.status(200).json({ numHalfs: numHalfs })
 })
 
+
 router.get("/orderExists/:orderNo", async (req, res) => {
     const order = await Order.findOne({orderNo: req.params.orderNo})
     res.status(200).json({orderExists: order ? true : false})
 })
 
-router.get("/:orderNo", verifyTokenAndAdmin, async (req, res) => {
-    try {
-        const order = await Order.findOne({orderNo: req.params.orderNo})
-        res.status(200).json(order)
-    } catch(err) { res.status(500).json(err) }
-})
-
-// TODO: return all orders with the current date
 router.get("/today", verifyTokenAndAdmin, async (req, res) => {
     try {
         const now = moment.tz('Pacific/Auckland')
@@ -38,13 +31,20 @@ router.get("/today", verifyTokenAndAdmin, async (req, res) => {
     } catch(err) { res.status(500).json(err) }
 })
 
-
 router.get("/", verifyTokenAndAdmin, async (req, res) => {
     try {
         const orders = await Order.find().sort({"pickupTime" : 1})
         res.status(200).json(orders)
     } catch(err) { res.status(500).json(err) }
 })
+
+router.get("/:orderNo", verifyTokenAndAdmin, async (req, res) => {
+    try {
+        const order = await Order.findOne({orderNo: req.params.orderNo})
+        res.status(200).json(order)
+    } catch(err) { res.status(500).json(err) }
+})
+
 
 
 router.delete("/", verifyTokenAndAdmin, async (req, res) => {
