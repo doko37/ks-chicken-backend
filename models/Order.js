@@ -17,6 +17,10 @@ const OrderSchema = new mongoose.Schema({
     orderNo: {
         type: String,
         required: true
+    },
+    confirmed: {
+        type: Boolean,
+        required: true
     }
 })
 

@@ -48,7 +48,8 @@ router.post('/webhook', express.raw({type: 'application/json'}), async (request,
             user: custInfo,
             pickupDate: data.pickupDate,
             pickupTime: data.pickupTime,
-            orderNo: orderNumber
+            orderNo: orderNumber,
+            confirmed: false
         }
 
         const newOrder = new OrderModel(order)
