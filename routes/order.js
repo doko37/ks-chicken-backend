@@ -26,7 +26,7 @@ router.get("/today", verifyTokenAndAdmin, async (req, res) => {
         const now = moment.tz('Pacific/Auckland')
         const today = now.add(now.hour() >= 20 ? 1 : 0, 'd').format('YYYY-MM-DD')
         console.log(today)
-        const orders = await Order.find({"pickupDate" : today})
+        const orders = await Order.find({"pickupDate" : today}).sort({"pickupTime": 1})
         res.status(200).json(orders)
     } catch(err) { res.status(500).json(err) }
 })
