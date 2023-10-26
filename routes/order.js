@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Order = require('../models/Order')
+const CompletedOrder = require('../models/CompletedOrder')
 const router = require("express").Router()
 const { verifyTokenAndAdmin, verifyTokenAndAuthorization } = require('./verifyToken')
 const moment = require('moment-timezone')
@@ -13,6 +14,20 @@ router.post("/numHalfs", async (req, res) => {
     }
 
     res.status(200).json({ numHalfs: numHalfs })
+})
+
+router.post("/complete/:orderNo", verifyTokenAndAdmin, async (req, res) => {
+    try {
+        Order.findOne({orderNo: req.params.orderNo}).then(async (response) => {
+            let orderJSON = response.toJSON()
+            const {confirmed, ...order} = orderJSON
+            order.completedAt = moment().format("YYYY-MM-DD HH:mm")
+            const completedOrder = CompletedOrder(order)
+            await completedOrder.save()
+            await Order.deleteOne({orderNo: req.params.orderNo})
+        })
+        res.status(200).json({message: `Order ${req.params.orderNo} completed.`})
+    } catch(err) { res.status(500).json(err) }
 })
 
 router.put("/confirm/:orderNo", verifyTokenAndAdmin, async (req, res) => {
@@ -39,7 +54,7 @@ router.get("/today", verifyTokenAndAdmin, async (req, res) => {
 
 router.get("/", verifyTokenAndAdmin, async (req, res) => {
     try {
-        const orders = await Order.find().sort({"pickupTime" : 1})
+        const orders = await CompletedOrder.find().sort({"pickupTime" : 1})
         res.status(200).json(orders)
     } catch(err) { res.status(500).json(err) }
 })

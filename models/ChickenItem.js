@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-ToppingSchema = require('./Topping')
 
 const ChickenItemSchema = new mongoose.Schema({
     name: {

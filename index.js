@@ -33,7 +33,6 @@ mongoose.connect(process.env.MONGO_URL).then(console.log("DB connected"))
 app.use("/api/stripe", stripeRoute)
 app.use("/api/items", itemRoute)
 app.use("/api/auth", authRoute)
-app.use("/api/cart", cartRoute)
 app.use("/api/user", userRoute)
 app.use("/api/order", orderRoute)
 
