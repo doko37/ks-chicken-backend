@@ -9,6 +9,7 @@ async function countOrders(time) {
     let count = 0
 
     for(let i in orders) {
+        console.log(orders[i])
         let cart = orders[i].user.cart
 
         count += cart.numHalfs
@@ -88,9 +89,10 @@ async function createArray(date) {
 // }
 
 router.get('/orders', async (req, res) => {
-    let orders = await countOrders(req.body.time)
+    console.log(req.body.time)
+    let numHalfs = await countOrders(moment(req.body.time))
 
-    res.json({orders: orders})
+    res.json({numHalfs: numHalfs})
 })
 
 router.get('/', async (req, res) => {
