@@ -21,7 +21,7 @@ router.post("/complete/:orderNo", verifyTokenAndAdmin, async (req, res) => {
         Order.findOne({orderNo: req.params.orderNo}).then(async (response) => {
             let orderJSON = response.toJSON()
             const {confirmed, ...order} = orderJSON
-            order.completedAt = moment().format("YYYY-MM-DD HH:mm")
+            order.completedAt = moment.tz('Pacific/Auckland').format("YYYY-MM-DD HH:mm")
             const completedOrder = CompletedOrder(order)
             await completedOrder.save()
             await Order.deleteOne({orderNo: req.params.orderNo})
