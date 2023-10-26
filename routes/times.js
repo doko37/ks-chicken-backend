@@ -4,7 +4,7 @@ const router = express.Router()
 const Order = require('../models/Order')
 
 async function countOrders(time) {
-    const orders = await Order.find({pickupTime: time.format('YYYY-MM-DD H:mm')})
+    const orders = await Order.find({pickupTime: time.format('H:mm'), pickupDate: time.format('YYYY-MM-DD')})
     
     let count = 0
 
