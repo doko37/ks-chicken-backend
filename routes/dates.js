@@ -7,7 +7,7 @@ function getDates() {
     
     const now = moment.tz('Pacific/Auckland')
     
-    if(now.hour() >= 20 || (now.hour() === 19 && now.minute() > 50)) {
+    if(now.hour() >= 20 || (now.hour() === 19 && now.minute() >= 50)) {
         now.add(1, 'd')
     }
     
