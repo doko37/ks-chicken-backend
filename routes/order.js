@@ -54,7 +54,7 @@ router.get("/today", verifyTokenAndAdmin, async (req, res) => {
 
 router.get("/", verifyTokenAndAdmin, async (req, res) => {
     try {
-        const orders = await CompletedOrder.find().sort({"pickupTime" : 1})
+        const orders = await CompletedOrder.find().sort({"pickupDate" : -1, "pickupTime" : -1})
         res.status(200).json(orders)
     } catch(err) { res.status(500).json(err) }
 })

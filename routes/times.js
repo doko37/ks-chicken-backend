@@ -9,7 +9,6 @@ async function countOrders(time) {
     let count = 0
 
     for(let i in orders) {
-        console.log(orders[i])
         let cart = orders[i].user.cart
 
         count += cart.numHalfs
@@ -24,10 +23,16 @@ async function createArray(date) {
     const closeHour = 20
 
     const currentTime = moment.tz('Pacific/Auckland').format('HH:mm')
-    const orderTime = moment(date).startOf('d').add(currentTime)
+    let orderTime
+    if(date === undefined) {
+        orderTime = moment.tz('Pacific/Auckland').startOf('d').add(currentTime)
+    } else {
+        orderTime = moment(date).startOf('d').add(currentTime)
+    }
     const splitTime = currentTime.split(':')
     if(date === undefined && (Number(splitTime[0]) >= 20 || Number(splitTime[0]) === 19 && Number(splitTime[1]) > 50 )) orderTime.add(1, 'd')
 
+    
     if(orderTime.hour() >= closeHour) {
         orderTime.hour(11).minute(0)
     } else {
@@ -57,36 +62,6 @@ async function createArray(date) {
 
     return time
 }
-
-// async function createArray(date) {
-//     let time = []
-//     const increment = 10
-//     const closeHour = 20
-
-//     const currentTime = moment.tz('Pacific/Auckland').format('HH:mm')
-//     const orderTime = moment(date).startOf('d').add(currentTime)
-//     const splitTime = currentTime.split(':')
-//     if(date === undefined && (Number(splitTime[0]) >= 20 || Number(splitTime[0]) === 19 && Number(splitTime[1]) >= 50 )) orderTime.add(1, 'd')
-//     //console.log(date, orderTime.format('YYYY-MM-DD HH:mm'))
-
-//     if(orderTime.hour() >= closeHour) {
-//         orderTime.hour(10).minute(50)
-//     } else {
-//         if((orderTime.hour() === 10 && orderTime.minute() < 50) || orderTime.hour() < 11 || (orderTime.hour() === 19 && orderTime.minute() >= 50)) {
-//             orderTime.hour(10).minute(50)
-//         } else {
-//             const remainder = orderTime.minute() % 10;
-//             orderTime.add((10 - remainder) + 10, 'm')
-//         }
-//     }
-
-//     while(orderTime.add(increment, 'm').hour() < closeHour) {
-//         let count = await countOrders(orderTime)
-//         time.push({time: orderTime.format('HH:mm'), available: (count < 4)})
-//     }
-
-//     return time
-// }
 
 router.get('/orders', async (req, res) => {
     console.log(req.body.time)
