@@ -51,11 +51,11 @@ async function createArray(date) {
         if(overload < 0) overload = 0
         if(overload > 0) {
             numHalfs = await countOrders(tempTime)
-            time.push({time: tempTime.format('HH:mm'), available: (numHalfs + overload < 4)})
+            time.push({time: tempTime.format('HH:mm'), available: (numHalfs + overload < 4), numHalfs: numHalfs})
             overload -= 4
         } else {
             overload += await countOrders(tempTime)
-            time.push({time: tempTime.format('HH:mm'), available: (overload < 4)})
+            time.push({time: tempTime.format('HH:mm'), available: (overload < 4), numHalfs: overload})
             overload -= 4
         }
     }
