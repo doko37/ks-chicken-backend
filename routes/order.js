@@ -68,7 +68,7 @@ router.get("/:orderNo", verifyTokenAndAdmin, async (req, res) => {
 
 router.delete("/", verifyTokenAndAdmin, async (req, res) => {
     try {
-        await Order.deleteMany()
+        await CompletedOrder.deleteMany()
         res.status(200).json("All orders have been deleted")
     } catch(err) { res.status(200).json(err) }
 })

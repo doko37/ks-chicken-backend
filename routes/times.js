@@ -2,6 +2,8 @@ const express = require('express')
 const moment = require('moment-timezone')
 const router = express.Router()
 const Order = require('../models/Order')
+const TimeSlot = require('../models/TimeSlot')
+const { verifyTokenAndAdmin } = require('./verifyToken')
 
 async function countOrders(time) {
     const orders = await Order.find({pickupTime: time.format('H:mm'), pickupDate: time.format('YYYY-MM-DD')})
@@ -76,4 +78,26 @@ router.get('/', async (req, res) => {
     res.json(time.reverse())
 })
 
+<<<<<<< HEAD
 module.exports = router
+=======
+router.post('/timeSlot', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        await TimeSlot.create({
+            time: req.body.time,
+            available: req.body.available
+        })
+
+        res.status(200).json("timeslot created")
+    } catch(err) { res.status(500).json(err) }
+})
+
+router.get('/timeSlot', async (req, res) => {
+    try {
+        const timeSlot = await TimeSlot.findOne({time: req.body.time})
+        res.status(200).json(timeSlot)
+    } catch(err) { res.status(500).json(err) }
+})
+
+module.exports = router
+>>>>>>> b4dfa7b99735c3e3a1930914b8afe9bb5a099af1
