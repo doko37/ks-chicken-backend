@@ -96,14 +96,4 @@ router.get('/timeSlot', async (req, res) => {
     } catch(err) { res.status(500).json(err) }
 })
 
-router.put('/updateTimeSlot', async (req, res) => {
-    try {
-        const updatedTimeSlot = TimeSlot.findOneAndUpdate({time: req.body.time}, {
-            $set: { available: req.body.available}
-        }, {new: true})
-
-        res.status(200).json(updatedTimeSlot)
-    } catch(err) { res.status(500).json(err) }
-})
-
 module.exports = router
