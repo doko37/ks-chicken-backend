@@ -78,9 +78,7 @@ router.get('/', async (req, res) => {
     res.json(time.reverse())
 })
 
-<<<<<<< HEAD
 module.exports = router
-=======
 router.post('/timeSlot', verifyTokenAndAdmin, async (req, res) => {
     try {
         await TimeSlot.create({
@@ -100,4 +98,3 @@ router.get('/timeSlot', async (req, res) => {
 })
 
 module.exports = router
->>>>>>> b4dfa7b99735c3e3a1930914b8afe9bb5a099af1
