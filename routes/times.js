@@ -19,6 +19,16 @@ async function countOrders(time) {
     return count
 }
 
+async function checkTimeSlot(time) {
+    const timeSlot = await TimeSlot.findOne({time: time.format('YYYY-MM-DD HH:mm')})
+    if(timeSlot != null) {
+        console.log(timeSlot)
+        return timeSlot.available
+    }
+
+    return true
+}
+
 async function createArray(date) {
     let time = []
     const increment = 10
@@ -53,13 +63,20 @@ async function createArray(date) {
         if(overload < 0) overload = 0
         if(overload > 0) {
             numHalfs = await countOrders(tempTime)
-            time.push({time: tempTime.format('HH:mm'), available: (numHalfs + overload < 4), numHalfs: numHalfs})
-            overload -= 4
+            if(await checkTimeSlot(tempTime) === false) {
+                time.push({time: tempTime.format('HH:mm'), available: false, numHalfs: numHalfs})
+            } else {
+                time.push({time: tempTime.format('HH:mm'), available: (numHalfs + overload < 4), numHalfs: numHalfs})
+            }
         } else {
             overload += await countOrders(tempTime)
-            time.push({time: tempTime.format('HH:mm'), available: (overload < 4), numHalfs: overload})
-            overload -= 4
+            if(await checkTimeSlot(tempTime) === false) {
+                time.push({time: tempTime.format('HH:mm'), available: false, numHalfs: overload})
+            } else {
+                time.push({time: tempTime.format('HH:mm'), available: (overload < 4), numHalfs: overload})
+            }
         }
+        overload -= 4
     }
 
     return time
@@ -78,7 +95,6 @@ router.get('/', async (req, res) => {
     res.json(time.reverse())
 })
 
-module.exports = router
 router.post('/timeSlot', verifyTokenAndAdmin, async (req, res) => {
     try {
         await TimeSlot.create({
@@ -94,6 +110,20 @@ router.get('/timeSlot', async (req, res) => {
     try {
         const timeSlot = await TimeSlot.findOne({time: req.body.time})
         res.status(200).json(timeSlot)
+    } catch(err) { res.status(500).json(err) }
+})
+
+router.delete('/timeSlot', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        await TimeSlot.deleteOne({time: req.body.time})
+        res.status(200).send("TimeSlot has been deleted.")
+    } catch(err) { res.status(500).json(err) }
+})
+
+router. delete('/allTimeSlots', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        await TimeSlot.deleteMany()
+        res.status(200).send("All TimeSlots have been deleted.")
     } catch(err) { res.status(500).json(err) }
 })
 
