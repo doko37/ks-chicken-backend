@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
-const TimeSlotSchema = new mongoose.Schema({
-    time: {
+const StoreHoursSchema = new mongoose.Schema({
+    date: {
         type: String,
         required: true,
     },
-    available: {
+    closed: {
         type: Boolean,
         required: true
     },
@@ -16,5 +16,5 @@ const TimeSlotSchema = new mongoose.Schema({
 })
 
 
-const TimeSlotModel = mongoose.model("TimeSlot", TimeSlotSchema)
-module.exports = TimeSlotModel 
+const StoreHoursModel = mongoose.model("StoreHours", StoreHoursSchema)
+module.exports = StoreHoursModel 
