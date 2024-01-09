@@ -60,4 +60,13 @@ router.get('/storeHours/today', async (req, res) => {
     }
 })
 
+router.get('/storeHours', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        const hours = await StoreHours.find()
+        res.status(200).json(hours)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+})
+
 module.exports = router
