@@ -69,4 +69,13 @@ router.get('/storeHours', verifyTokenAndAdmin, async (req, res) => {
     }
 })
 
+router.delete('/storeHours', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        await StoreHours.deleteMany({ date: req.body.date })
+        res.status(200).json(`Deleted store hour at ${req.body.date}`)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+})
+
 module.exports = router
