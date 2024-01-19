@@ -65,8 +65,9 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
       const transporter = nodemailer.createTransport(config)
 
       let items = ''
+      const length = user.cart.items.length
       user.cart.items.forEach((item, i) => {
-        items += `${item.name} x${item.quantity}${i < items.length - 1 ? ',' : ''}<br />`
+        items += `${item.name} x${item.quantity}${i < length - 1 ? ',' : ''}<br />`
       })
 
       const mail = `
