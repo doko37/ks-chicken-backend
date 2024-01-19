@@ -7,8 +7,7 @@ const OrderModel = require('../models/Order')
 const nodemailer = require('nodemailer')
 const mailgen = require('mailgen')
 const moment = require('moment')
-
-const endpointSecret = "whsec_8d64f1f6dae0e7239325380e5f739e2a89fdeb779182e4b1ada1d451c249a866";
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET
 
 router.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
   const sig = request.headers['stripe-signature'];
@@ -65,12 +64,17 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
 
       const transporter = nodemailer.createTransport(config)
 
+      let items = ''
+      user.cart.items.forEach((item, i) => {
+        items += `${item.name} x${item.quantity}${i < items.length - 1 ? ',' : ''}<br />`
+      })
+
       const mail = `
         <main>
             <img src="https://i.ibb.co/0tsCTMh/logo.png" alt="logo" border="0" style="height: 80px; margin-bottom: 1rem; background-color: #252425; padding: 1rem; border-radius: 0.5rem">
             <h3>Hi ${data.fname}, Thank you for your order!</h3>
             <h4>Your order:</h4>
-            ${user.cart.items.map(item => `<p>${item.name} x${item.quantity}</p>`)}
+            ${items}
             <h4>Order total: $${(data.total / 100).toFixed(2)}</h4>
             <h4>It will be ready for pick up at:</h4>
             <p>${moment(data.pickupDate).startOf('d').add(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
@@ -84,7 +88,31 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
         html: mail
       }
 
-      transporter.sendMail(message).catch(error => {
+      const mailToOwner = `
+        <main>
+            <img src="https://i.ibb.co/0tsCTMh/logo.png" alt="logo" border="0" style="height: 80px; margin-bottom: 1rem; background-color: #252425; padding: 1rem; border-radius: 0.5rem">
+            <h3>A New order has been placed:</h3>
+            <h4>Customer name: ${data.fname} ${data.lname}</h4>
+            <h4>Customer order:</h4>
+            ${items}
+            <h4>Order total: $${(data.total / 100).toFixed(2)}</h4>
+            <h4>For pick up at:</h4>
+            <p>${moment(data.pickupDate).startOf('d').add(data.pickupTime).format('dddd, MMM Do, h:mm A')}</p>
+        </main>
+        `
+
+      const messageToOwner = {
+        from: process.env.EMAIL,
+        to: process.env.EMAIL,
+        subject: `NEW KS CHICKEN ORDER #${orderNumber}`,
+        html: mailToOwner
+      }
+
+      await transporter.sendMail(message).catch(error => {
+        return response.status(500).json({ error })
+      })
+
+      await transporter.sendMail(messageToOwner).catch(error => {
         return response.status(500).json({ error })
       })
 
