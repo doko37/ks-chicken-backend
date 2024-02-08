@@ -1,12 +1,14 @@
 const CryptoJS = require("crypto-js")
 const jwt = require("jsonwebtoken")
 const User = require("../models/User")
+const moment = require('moment-timezone')
 
 const router = require("express").Router()
 
 // CREATE GUEST USER
 router.post("/createGuest", async (req, res) => {
     const newUser = new User(req.body)
+    newUser.expiresAfter = new Date(moment.tz('Pacific/Auckland').add(1, 'h'))
 
     try {
         const savedUser = await newUser.save()

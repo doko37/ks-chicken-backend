@@ -21,6 +21,10 @@ const CompletedOrderSchema = new mongoose.Schema({
     completedAt: {
         type: String,
         required: true
+    },
+    expiresAfter: {
+        type: Date,
+        required: true
     }
 })
 

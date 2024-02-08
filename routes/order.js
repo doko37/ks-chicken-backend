@@ -32,7 +32,9 @@ router.post("/complete/:orderNo", verifyTokenAndAdmin, async (req, res) => {
 
 router.put("/confirm/:orderNo", verifyTokenAndAdmin, async (req, res) => {
     try {
-        await Order.updateOne({ orderNo: req.params.orderNo }, { confirmed: true })
+        const expireDate = new Date()
+        expireDate.setHours(expireDate.getHours() + 12)
+        await Order.updateOne({ orderNo: req.params.orderNo }, { confirmed: true, expiresAfter: expireDate })
         res.status(200).json({ message: `Order ${req.params.orderNo} confirmed.` })
     } catch (err) { res.status(500).json(err) }
 })
@@ -45,6 +47,7 @@ router.get("/orderExists/:orderNo", async (req, res) => {
 router.get("/today", verifyTokenAndAdmin, async (req, res) => {
     try {
         const now = moment.tz('Pacific/Auckland')
+        console.log(today)
         const today = now.add(now.hour() >= 20 ? 1 : 0, 'd').format('YYYY-MM-DD')
         const orders = await Order.find({ "pickupDate": today }).sort({ "pickupTime": 1 })
         res.status(200).json(orders)

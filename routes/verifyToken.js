@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken")
-const CryptoJS = require("crypto-js")
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.token

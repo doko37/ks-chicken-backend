@@ -1,15 +1,60 @@
 const router = require("express").Router()
 const express = require('express')
-const stripe = require('stripe')(process.env.STRIPE_SEC_KEY)
 const mongoose = require('mongoose')
 const User = require('../models/User')
 const OrderModel = require('../models/Order')
 const nodemailer = require('nodemailer')
 const mailgen = require('mailgen')
 const moment = require('moment')
-const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET
+const {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} = require("@aws-sdk/client-secrets-manager");
+let endpointSecret
+let stripe
+
+const getSecrets = async () => {
+  const secret_stripe_endpoint_sec = process.env.STRIPE_ENDPOINT_SEC
+  const secret_stripe_sec_key = process.env.STRIPE_SEC_KEY
+
+  const client = new SecretsManagerClient({
+    region: "ap-southeast-2",
+  });
+
+  let response;
+
+  try {
+    response = await client.send(
+      new GetSecretValueCommand({
+        SecretId: secret_stripe_endpoint_sec,
+        VersionStage: "AWSCURRENT",
+      })
+    );
+  } catch (error) {
+    throw error;
+  }
+
+  const stripe_endpoint_sec = response.SecretString;
+
+  try {
+    response = await client.send(
+      new GetSecretValueCommand({
+        SecretId: secret_stripe_sec_key,
+        VersionStage: "AWSCURRENT",
+      })
+    );
+  } catch (error) {
+    throw error;
+  }
+
+  const stripe_sec_key = response.SecretString;
+
+  endpointSecret = stripe_endpoint_sec
+  stripe = require('stripe')(stripe_sec_key)
+}
 
 router.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
+  await getSecrets()
   const sig = request.headers['stripe-signature'];
 
   let event;
