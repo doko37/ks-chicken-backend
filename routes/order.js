@@ -22,6 +22,7 @@ router.post("/complete/:orderNo", verifyTokenAndAdmin, async (req, res) => {
             let orderJSON = response.toJSON()
             const { confirmed, ...order } = orderJSON
             order.completedAt = moment.tz('Pacific/Auckland').format("YYYY-MM-DD HH:mm")
+	    order.expiresAfter = new Date(moment.tz('Pacific/Auckland').add(7, 'd'))
             const completedOrder = CompletedOrder(order)
             await completedOrder.save()
             await Order.deleteOne({ orderNo: req.params.orderNo })
@@ -47,11 +48,10 @@ router.get("/orderExists/:orderNo", async (req, res) => {
 router.get("/today", verifyTokenAndAdmin, async (req, res) => {
     try {
         const now = moment.tz('Pacific/Auckland')
-        console.log(today)
         const today = now.add(now.hour() >= 20 ? 1 : 0, 'd').format('YYYY-MM-DD')
         const orders = await Order.find({ "pickupDate": today }).sort({ "pickupTime": 1 })
         res.status(200).json(orders)
-    } catch (err) { res.status(500).json(err) }
+    } catch (err) { res.status(500).json("Error fetching today's orders: :" + err) }
 })
 
 router.get("/", verifyTokenAndAdmin, async (req, res) => {

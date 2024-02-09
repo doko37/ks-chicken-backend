@@ -30,7 +30,7 @@ const getSecret = async () => {
         throw error;
     }
 
-    stripe = require('stripe')(response.SecretString);
+    stripe = require('stripe')(JSON.parse(response.SecretString).STRIPE_SEC_KEY);
 }
 
 function hasNumber(key) {

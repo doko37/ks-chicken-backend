@@ -37,12 +37,12 @@ const getSecret = async () => {
     } catch (error) {
         console.log(error)
     }
-
     return response.SecretString
 }
 
 const start = async () => {
-    const mongo_url = await getSecret()
+    const key = await getSecret()
+    const mongo_url = JSON.parse(key)
 
     app.use(cors())
     app.use(express.static("public"))
@@ -58,7 +58,9 @@ const start = async () => {
     app.use('/api/dates', dates)
     app.use('/api/times', times)
 
-    mongoose.connect(mongo_url).then(console.log("DB connected"))
+    mongoose.connect(mongo_url.MONGO_URL)
+		.then(console.log("DB connected"))
+		.catch((e) => console.log("DB Error: " + e))
 
     app.use("/api/stripe", stripeRoute)
     app.use("/api/items", itemRoute)

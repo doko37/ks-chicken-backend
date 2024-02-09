@@ -34,7 +34,7 @@ const getSecrets = async () => {
     throw error;
   }
 
-  const stripe_endpoint_sec = response.SecretString;
+  const stripe_endpoint_sec = JSON.parse(response.SecretString).STRIPE_ENDPOINT_SEC;
 
   try {
     response = await client.send(
@@ -47,7 +47,7 @@ const getSecrets = async () => {
     throw error;
   }
 
-  const stripe_sec_key = response.SecretString;
+  const stripe_sec_key = JSON.parse(response.SecretString).STRIPE_SEC_KEY;
 
   endpointSecret = stripe_endpoint_sec
   stripe = require('stripe')(stripe_sec_key)
