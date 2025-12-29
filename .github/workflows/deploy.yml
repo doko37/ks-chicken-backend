@@ -21,6 +21,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-2
 
+      - name: Debug identity
+        run: aws sts get-caller-identity
+
       - name: Prepare CodeDeploy bundle
         run: |
           rm -rf deploy deployment_bundle.zip
