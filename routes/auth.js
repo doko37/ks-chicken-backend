@@ -25,7 +25,10 @@ router.post("/createGuest", async (req, res) => {
         const { id, ...others } = savedUser._doc
 
         res.status(200).json({ ...others, accessToken })
-    } catch (err) { res.status(500).json(err) }
+    } catch (err) { 
+        console.error(err)
+        res.status(500).json(err) 
+    }
 })
 
 // CREATE NEW USER
