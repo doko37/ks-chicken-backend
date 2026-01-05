@@ -17,44 +17,50 @@ const getSecrets = async () => {
   const secret_stripe_endpoint_sec = process.env.STRIPE_ENDPOINT_SEC
   const secret_stripe_sec_key = process.env.STRIPE_SEC_KEY
 
-  const client = new SecretsManagerClient({
-    region: "ap-southeast-2",
-  });
-
-  let response;
-
-  try {
-    response = await client.send(
-      new GetSecretValueCommand({
-        SecretId: secret_stripe_endpoint_sec,
-        VersionStage: "AWSCURRENT",
-      })
-    );
-  } catch (error) {
-    throw error;
+  if (process.env.NODE_ENV === 'production') {
+    const client = new SecretsManagerClient({
+      region: "ap-southeast-2",
+    });
+  
+    let response;
+  
+    try {
+      response = await client.send(
+        new GetSecretValueCommand({
+          SecretId: secret_stripe_endpoint_sec,
+          VersionStage: "AWSCURRENT",
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
+  
+    const stripe_endpoint_sec = JSON.parse(response.SecretString).STRIPE_ENDPOINT_SEC;
+  
+    try {
+      response = await client.send(
+        new GetSecretValueCommand({
+          SecretId: secret_stripe_sec_key,
+          VersionStage: "AWSCURRENT",
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
+  
+    const stripe_sec_key = JSON.parse(response.SecretString).STRIPE_SEC_KEY;
+  
+    endpointSecret = stripe_endpoint_sec;
+    stripe = require('stripe')(stripe_sec_key);
+  } else {
+    endpointSecret = secret_stripe_endpoint_sec;
+    stripe = require('stripe')(secret_stripe_sec_key);
   }
-
-  const stripe_endpoint_sec = JSON.parse(response.SecretString).STRIPE_ENDPOINT_SEC;
-
-  try {
-    response = await client.send(
-      new GetSecretValueCommand({
-        SecretId: secret_stripe_sec_key,
-        VersionStage: "AWSCURRENT",
-      })
-    );
-  } catch (error) {
-    throw error;
-  }
-
-  const stripe_sec_key = JSON.parse(response.SecretString).STRIPE_SEC_KEY;
-
-  endpointSecret = stripe_endpoint_sec
-  stripe = require('stripe')(stripe_sec_key)
 }
 
 router.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
   await getSecrets()
+  console.log('webhook invoked')
   const sig = request.headers['stripe-signature'];
 
   let event;
@@ -62,7 +68,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
-    console.log(err.message)
+    console.log(err.message);
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -96,8 +102,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
         confirmed: false
       }
 
-      const newOrder = new OrderModel(order)
-      await newOrder.save()
+      const newOrder = new OrderModel(order);
+      await newOrder.save();
 
       const config = {
         service: 'gmail',
@@ -107,7 +113,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
         }
       }
 
-      const transporter = nodemailer.createTransport(config)
+      const transporter = nodemailer.createTransport(config);
 
       let items = ''
       const length = user.cart.items.length
@@ -154,16 +160,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (reques
         html: mailToOwner
       }
 
-      await transporter.sendMail(message).catch(error => {
-        return response.status(500).json({ error })
-      })
-
-      await transporter.sendMail(messageToOwner).catch(error => {
-        return response.status(500).json({ error })
-      })
+      try {
+        await transporter.sendMail(message);
+        await transporter.sendMail(messageToOwner);
+      } catch (err) {
+        return response.status(500).send({ err });
+      }
 
       if (user.isGuest) {
-        await User.findByIdAndDelete(data.userId)
+        await User.findByIdAndDelete(data.userId);
       }
 
       break;

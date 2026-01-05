@@ -1,4 +1,5 @@
 #!/bin/bash
 cd /home/ubuntu/ks-chicken-server
 npm i
-pm2 start index.js --name ks-chicken
+cd ..
+pm2 start ecosystem.config.js --name ks-chicken

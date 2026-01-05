@@ -13,6 +13,10 @@ const stripeRoute = require('./routes/stripe')
 const stripeWebhookRoute = require('./routes/stripeWebhook')
 const orderRoute = require('./routes/order')
 const cors = require('cors')
+const allowedOrigins = [
+    'https://kschicken.co.nz',
+    'http://localhost:3000'
+];
 const {
     SecretsManagerClient,
     GetSecretValueCommand,
@@ -44,17 +48,21 @@ const start = async () => {
     const key = await getSecret()
     const mongo_url = JSON.parse(key)
 
-    app.use(cors())
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true)
+            }
+            return callback(new Error('Not allowed by CORS'))
+        },
+        methods: ['GET', 'POST', 'PUT'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'token']
+    }))
     app.use(express.static("public"))
     app.use("/api/stripeWebhook", stripeWebhookRoute)
     app.use(express.json())
-    app.use((req, res, next) => {
-        res.header('Access-Control-Allow-Origin', 'https://kschicken.co.nz');
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        next();
-    });
     app.use('/api/dates', dates)
     app.use('/api/times', times)
 

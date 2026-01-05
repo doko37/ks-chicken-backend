@@ -13,24 +13,25 @@ const {
 let stripe
 
 const getSecret = async () => {
-    const client = new SecretsManagerClient({
-        region: "ap-southeast-2",
-    });
-
     const secret_stripe_sec_key = process.env.STRIPE_SEC_KEY
-
-    try {
-        response = await client.send(
-            new GetSecretValueCommand({
-                SecretId: secret_stripe_sec_key,
-                VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
-            })
-        );
-    } catch (error) {
-        throw error;
+    if (process.env.NODE_ENV === 'production') {
+        try {
+            const client = new SecretsManagerClient({
+                region: "ap-southeast-2",
+            });
+            response = await client.send(
+                new GetSecretValueCommand({
+                    SecretId: secret_stripe_sec_key,
+                    VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
+                })
+            );
+        } catch (error) {
+            throw error;
+        }
+        stripe = require('stripe')(JSON.parse(response.SecretString).STRIPE_SEC_KEY);
+    } else {
+        stripe = require('stripe')(secret_stripe_sec_key)
     }
-
-    stripe = require('stripe')(JSON.parse(response.SecretString).STRIPE_SEC_KEY);
 }
 
 function hasNumber(key) {
